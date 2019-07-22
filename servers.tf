@@ -1,52 +1,52 @@
 resource "google_compute_instance" "firstserver" {
-  name = "thefirstserver"
+  name         = "thefirstserver"
   machine_type = "f1-micro"
-  zone = "us-west1-a"
+  zone         = "us-west1-a"
 
   boot_disk {
-      initialize_params {
-          image = "debian-cloud/debian-9"
-      }
+    initialize_params {
+      image = "debian-cloud/debian-9"
+    }
   }
 
   network_interface {
-      subnetwork = "${google_compute_subnetwork.dev-subnet.name}"
+    subnetwork = "${google_compute_subnetwork.dev-subnet.name}"
 
-      access_config {
-      }
+    access_config {
+    }
   }
 
   metadata = {
-      foo = "bar"
+    foo = "bar"
   }
 
   service_account {
-      scopes = ["userinfo-email", "compute-ro", "storage-ro"]
+    scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
 }
 
-data "aws_ami"  "ubuntu" {
-    most_recent = true
+data "aws_ami" "ubuntu" {
+  most_recent = true
 
-    filter {
-        name = "name"
-        values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
-    }
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+  }
 
-    filter {
-        name = "virtualization-type"
-        values = ["hvm"]
-    }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 
-    owners = ["099720109477"] # Canonical
+  owners = ["099720109477"] # Canonical
 }
 
 resource "aws_instance" "secondserver" {
-  ami = "${data.aws_ami.ubuntu.id}"
+  ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.micro"
 
   tags = {
-      Name = "indentifiertag"
+    Name = "indentifiertag"
   }
 
   subnet_id = "${aws_subnet.subnet2.id}"
